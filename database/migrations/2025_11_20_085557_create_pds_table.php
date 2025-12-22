@@ -38,6 +38,7 @@ return new class extends Migration
 
         Schema::create('pds_init', function (Blueprint $table) {
             $table->integer('TransNo')->primary()->autoIncrement();
+            $table->integer('ReffNo_PDS')->nullable();
             $table->dateTime('TransDate');
             $table->integer('Reg_No');
             $table->char('ID_No',10);
@@ -64,6 +65,28 @@ return new class extends Migration
             $table->string('UserName',15);
             $table->datetime('LastUpdate');
         });
+
+        Schema::create('pds_violation', function (Blueprint $table) {
+            $table->integer('RecID')->primary()->autoIncrement();
+            $table->integer('ReffNo');
+            $table->integer('ReffInit');
+            $table->integer('ItemID');
+            $table->string('ItemDesc',50);
+            $table->text('Punishment');
+            $table->char('Temp',1);
+            $table->string('UserName',15);
+            $table->datetime('LastUpdate');
+        });
+
+        Schema::create('pds_type', function (Blueprint $table) {
+            $table->integer('TransNo')->primary()->autoIncrement();
+            $table->smallInteger('TransGroup');
+            $table->string('ItemDesc',50);
+            $table->text('Punishment');
+            $table->char('Status',1);
+            $table->string('UserName',15);
+            $table->datetime('LastUpdate');
+        });
     }
 
     /**
@@ -72,5 +95,9 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('pds');
+        Schema::dropIfExists('pds_init');
+        Schema::dropIfExists('pds_init_violation');
+        Schema::dropIfExists('pds_violation');
+        Schema::dropIfExists('pds_type');
     }
 };
