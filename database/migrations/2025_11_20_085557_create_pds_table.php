@@ -82,10 +82,49 @@ return new class extends Migration
             $table->integer('TransNo')->primary()->autoIncrement();
             $table->smallInteger('TransGroup');
             $table->string('ItemDesc',50);
-            $table->text('Punishment');
+            $table->text('Punishment')->nullable();
             $table->char('Status',1);
             $table->string('UserName',15);
             $table->datetime('LastUpdate');
+        });
+
+        Schema::create('master_student', function (Blueprint $table) {
+            $table->integer('Reg_No')->primary()->autoIncrement();
+            $table->char('ID_No',10);
+            $table->string('F_Name',50);
+            $table->string('N_Name',50)->nullable();
+            $table->char('NIRM',15)->nullable();
+            $table->char('NIS',15)->nullable();
+            $table->smallInteger('Period')->nullable();
+            $table->smallInteger('Semester')->nullable();
+            $table->tinyInteger('Semester_Type')->nullable();
+            $table->smallInteger('Levels')->nullable();
+            $table->smallInteger('Major')->nullable();
+            $table->smallInteger('Grade')->nullable();
+            $table->char('Class',10)->nullable();
+            $table->smallInteger('Shift')->nullable();
+            $table->char('Leader',10)->nullable();
+            $table->string('LeaderName',50)->nullable();
+            $table->smallInteger('Status')->nullable();
+            $table->smallInteger('Location')->nullable();
+            $table->tinyInteger('Scholarship')->nullable();
+            $table->char('Gender',1)->nullable();
+            $table->string('Remarks',50)->nullable();
+            $table->datetime('Trans_Date')->nullable();
+            $table->string('User_Name',15)->nullable();
+            $table->datetime('LastUpdate')->nullable();
+            $table->char('ReRegist',1)->nullable();
+            $table->double('ExamNoTemp',10,0)->nullable();
+            $table->string('TempProcess',30)->nullable();
+        });
+
+        Schema::create('pds_input', function (Blueprint $table) {
+            $table->id();
+            $table->integer('reffno_pds');
+            $table->integer('student');
+            $table->string('evidence');
+            $table->string('username',15);
+            $table->timestamps();
         });
     }
 
@@ -99,5 +138,7 @@ return new class extends Migration
         Schema::dropIfExists('pds_init_violation');
         Schema::dropIfExists('pds_violation');
         Schema::dropIfExists('pds_type');
+        Schema::dropIfExists('Master_Student');
+        Schema::dropIfExists('pds_input');
     }
 };
