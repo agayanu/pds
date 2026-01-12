@@ -9,3 +9,8 @@
     </a>
 </li>
 <li class="nav-title">===</li>
+<li class="nav-item {{ Request::is('violation') ? 'active' : '' }}">
+    <a class="nav-link" href="{!! route('violation') !!}">
+        <i class="nav-icon cil-home"></i> Pelanggaran
+    </a>
+</li>
