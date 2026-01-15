@@ -16,6 +16,10 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('violation')->group(function () {
         Route::get('/', [ViolationController::class, 'index'])->name('violation');
         Route::get('data', [ViolationController::class, 'data'])->name('violation.data');
+        Route::get('name-search', [ViolationController::class, 'name_search'])->name('violation.name-search');
+        Route::get('article-search', [ViolationController::class, 'article_search'])->name('violation.article-search');
+        Route::get('download-evidence/{id}', [ViolationController::class, 'download_evidence'])->name('violation.download-evidence');
+        Route::get('download', [ViolationController::class, 'download'])->name('violation.download');
         Route::post('/', [ViolationController::class, 'store']);
         Route::post('update', [ViolationController::class, 'update'])->name('violation.update');
         Route::delete('delete/{id}', [ViolationController::class, 'destroy'])->name('violation.delete');

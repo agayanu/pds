@@ -22,10 +22,10 @@ return new class extends Migration
             $table->smallInteger('Grade');
             $table->smallInteger('Levels');
             $table->integer('Major');
-            $table->char('Status',1);
+            $table->char('Status',1)->default('1');
             $table->char('Leader',10);
             $table->string('LeaderName',50);
-            $table->text('Remarks');
+            $table->text('Remarks')->nullable();
             $table->string('UserName',15);
             $table->datetime('LastUpdate');
         });
@@ -36,7 +36,7 @@ return new class extends Migration
             $table->integer('ItemID');
             $table->string('ItemDesc',50);
             $table->text('Punishment');
-            $table->char('Temp',1);
+            $table->char('Temp',1)->default('N');
             $table->string('UserName',15);
             $table->datetime('LastUpdate');
         });
@@ -85,11 +85,14 @@ return new class extends Migration
 
         Schema::create('pds_input', function (Blueprint $table) {
             $table->id();
-            $table->integer('reffno_pds');
+            $table->integer('reffno_pds_init');
             $table->integer('student');
-            $table->string('evidence');
-            $table->string('username',15);
+            $table->string('article');
+            $table->string('remarks')->nullable();
+            $table->string('evidence',480);
+            $table->string('username');
             $table->timestamps();
+            $table->timestamp('deleted_at')->nullable();
         });
     }
 

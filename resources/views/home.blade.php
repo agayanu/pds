@@ -54,6 +54,11 @@
 <div class="card mb-3">
     <div class="card-body">
         Selamat datang {{ Auth::user()->name }}
+        <div class="row mt-3">
+            <div class="col">
+                <a href="{{route('violation')}}" class="btn btn-primary">Pelanggaran</a>
+            </div>
+        </div>
     </div>
 </div>
 @endsection
