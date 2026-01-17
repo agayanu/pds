@@ -44,7 +44,7 @@ return new class extends Migration
         Schema::create('pds_type', function (Blueprint $table) {
             $table->integer('TransNo')->primary()->autoIncrement();
             $table->smallInteger('TransGroup');
-            $table->string('ItemDesc',50);
+            $table->string('ItemDesc');
             $table->text('Punishment')->nullable();
             $table->char('Status',1);
             $table->string('UserName',15);
