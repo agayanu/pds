@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Carbon;
 use Yajra\DataTables\Facades\DataTables;
 use Maatwebsite\Excel\Facades\Excel;
-use App\Imports\ViolationImport;
+use App\Exports\ViolationExport;
 
 use function Symfony\Component\Clock\now;
 
@@ -51,6 +51,7 @@ class ViolationController extends Controller implements HasMiddleware
                 ->join('master_student as b', 'a.student', '=', 'b.Reg_No')
                 ->select('a.id','a.student','b.F_Name','b.Class','a.article as articleId','a.remarks','a.username','a.created_at')
                 ->where('a.username', $username)
+                ->whereNull('a.deleted_at')
                 ->whereBetween('a.created_at', [$dateFirst, $dateLast]);
             if($role == '0') {
                 $data = $data->where('a.username', $username);
@@ -323,5 +324,59 @@ class ViolationController extends Controller implements HasMiddleware
         ]);
 
         return redirect()->back()->with('success', 'Data Pelanggaran '.$i->F_Name.' Berhasil Dihapus!');
+    }
+
+    public function download(Request $r)
+    {
+        $dateFirstx = $r->input('date_first_d');
+        $dateLastxx = $r->input('date_last_d');
+        $dateFirst  = date_format(date_create($dateFirstx), 'Y-m-d');
+        $dateLastx  = Carbon::create($dateLastxx)->addDay();
+        $dateLast   = date_format(date_create($dateLastx), 'Y-m-d');
+
+        $data = DB::table('pds_input as a')
+            ->join('master_student as b', 'a.student', '=', 'b.Reg_No')
+            ->select('b.F_Name','b.Class','a.article as articleId','a.remarks','a.username','a.created_at')
+            ->whereBetween('a.created_at', [$dateFirst, $dateLast])
+            ->whereNull('a.deleted_at')
+            ->get()
+            ->map(function($d) {
+                $articles = json_decode($d->articleId);
+                $dt = DB::table('pds_type')
+                    ->select('Group','Article','ItemDesc')
+                    ->whereIn('TransNo', $articles)
+                    ->get()
+                    ->map(function($item) {
+                        if($item->Group == 'Ringan') {
+                            $item->NoArticle = '1';
+                        } elseif($item->Group == 'Sedang') {
+                            $item->NoArticle = '3';
+                        } elseif($item->Group == 'Berat') {
+                            $item->NoArticle = '5';
+                        } elseif($item->Group == 'Luar Biasa') {
+                            $item->NoArticle = '7';
+                        } else {
+                            $item->NoArticle = null;
+                        }
+                        return $item;
+                    });
+                foreach ($dt as $k => $s) {
+                    if($k == 0) {
+                        $article = 'Pasal '.$s->NoArticle.' ('.$s->Group.') - Nomor '.$s->Article.'. '.$s->ItemDesc;
+                    } else {
+                        $article = $article.'; Pasal '.$s->NoArticle.' ('.$s->Group.') - Nomor '.$s->Article.'. '.$s->ItemDesc;
+                    }
+                }
+                return [
+                    'name'      => $d->F_Name,
+                    'class'     => $d->Class,
+                    'article'   => $article,
+                    'remarks'   => $d->remarks,
+                    'username'  => $d->username,
+                    'createdAt' => date('d-m-Y H:i:s', strtotime($d->created_at)),
+                ];
+            });
+
+        return Excel::download(new ViolationExport($data,$dateFirstx,$dateLastxx), 'DataPelanggaran_'.$dateFirstx.'_'.$dateLastxx.'.xlsx');
     }
 }

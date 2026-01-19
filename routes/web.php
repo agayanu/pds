@@ -21,7 +21,6 @@ Route::middleware(['auth'])->group(function () {
         Route::get('download-evidence/{id}', [ViolationController::class, 'download_evidence'])->name('violation.download-evidence');
         Route::get('download', [ViolationController::class, 'download'])->name('violation.download');
         Route::post('/', [ViolationController::class, 'store']);
-        Route::post('update', [ViolationController::class, 'update'])->name('violation.update');
         Route::delete('delete/{id}', [ViolationController::class, 'destroy'])->name('violation.delete');
     });
 });
