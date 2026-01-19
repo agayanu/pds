@@ -34,7 +34,7 @@ return new class extends Migration
             $table->integer('RecID')->primary()->autoIncrement();
             $table->integer('ReffNo');
             $table->integer('ItemID');
-            $table->string('ItemDesc',50);
+            $table->string('ItemDesc');
             $table->text('Punishment');
             $table->char('Temp',1)->default('N');
             $table->string('UserName',15);
