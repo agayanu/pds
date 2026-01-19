@@ -33,10 +33,7 @@ class ViolationController extends Controller implements HasMiddleware
     {
         $dateFirst = $r->input('date_first') ?? now()->format('d-m-Y');
         $dateLast = $r->input('date_last') ?? now()->format('d-m-Y');
-        $types = DB::table('pds_type')
-            ->select('TransNo','Group','Article','ItemDesc')
-            ->get();
-        return view('violation',['dateFirst' => $dateFirst, 'dateLast' => $dateLast, 'types' => $types]);
+        return view('violation',['dateFirst' => $dateFirst, 'dateLast' => $dateLast]);
     }
 
     public function data(Request $r)
@@ -73,12 +70,26 @@ class ViolationController extends Controller implements HasMiddleware
                 $dt = DB::table('pds_type')
                     ->select('Group','Article','ItemDesc')
                     ->whereIn('TransNo', $articles)
-                    ->get();
+                    ->get()
+                    ->map(function($item) {
+                        if($item->Group == 'Ringan') {
+                            $item->NoArticle = '1';
+                        } elseif($item->Group == 'Sedang') {
+                            $item->NoArticle = '3';
+                        } elseif($item->Group == 'Berat') {
+                            $item->NoArticle = '5';
+                        } elseif($item->Group == 'Luar Biasa') {
+                            $item->NoArticle = '7';
+                        } else {
+                            $item->NoArticle = null;
+                        }
+                        return $item;
+                    });
                 foreach ($dt as $k => $s) {
                     if($k == 0) {
-                        $article = '('.$s->Group.'-'.$s->Article.') '.$s->ItemDesc;
+                        $article = 'Pasal '.$s->NoArticle.' ('.$s->Group.') - Nomor '.$s->Article.'. '.$s->ItemDesc;
                     } else {
-                        $article = $article.' <br>('.$s->Group.'-'.$s->Article.') '.$s->ItemDesc;
+                        $article = $article.' <br>Pasal '.$s->NoArticle.' ('.$s->Group.') - Nomor '.$s->Article.'. '.$s->ItemDesc;
                     }
                 }
                 $dataFix[] = [
@@ -132,9 +143,23 @@ class ViolationController extends Controller implements HasMiddleware
             $data = DB::table('pds_type')
                 ->select('TransNo as id','Group','Article','ItemDesc')
                 ->where('ItemDesc','LIKE','%'.$r->term.'%')
-                ->paginate(10, ['*'], 'page', $r->page);
+                ->paginate(10, ['*'], 'page', $r->page)
+                ->through(function($item) {
+                    if($item->Group == 'Ringan') {
+                        $item->NoArticle = '1';
+                    } elseif($item->Group == 'Sedang') {
+                        $item->NoArticle = '3';
+                    } elseif($item->Group == 'Berat') {
+                        $item->NoArticle = '5';
+                    } elseif($item->Group == 'Luar Biasa') {
+                        $item->NoArticle = '7';
+                    } else {
+                        $item->NoArticle = null;
+                    }
+                    return $item;
+                });
 
-            return response()->json([$data]);
+            return response()->json($data);
         }
     }
 

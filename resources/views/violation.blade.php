@@ -286,9 +286,9 @@ $("#article").select2({
         processResults: function(data, params) {
             params.current_page = params.current_page || 1;
             return {
-                results: data[0].data,
+                results: data.data,
                 pagination: {
-                    more: (params.current_page * 30) < data[0].total
+                    more: (params.current_page * 30) < data.total
                 }
             };
         },
@@ -339,9 +339,9 @@ function formatNameArticle(name) {
         "</div>" +
         "</div>"
     );
-
+    
     $container.find(".select2-result-name__position").text(name.ItemDesc);
-    $container.find(".select2-result-name__name").text(name.Group + ' - Pasal ' + name.Article);
+    $container.find(".select2-result-name__name").text('Pasal ' + name.NoArticle + ' (' + name.Group + ') - Nomor ' + name.Article);
 
     return $container;
 }
