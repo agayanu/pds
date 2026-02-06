@@ -50,7 +50,6 @@ class ViolationController extends Controller implements HasMiddleware
             $data = DB::table('pds_input as a')
                 ->join('master_student as b', 'a.student', '=', 'b.Reg_No')
                 ->select('a.id','a.student','b.F_Name','b.Class','a.article as articleId','a.remarks','a.username','a.created_at')
-                ->where('a.username', $username)
                 ->whereNull('a.deleted_at')
                 ->whereBetween('a.created_at', [$dateFirst, $dateLast]);
             if($role == '0') {
